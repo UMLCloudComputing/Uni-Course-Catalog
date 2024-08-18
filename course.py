@@ -1,5 +1,6 @@
 import requests
 import concurrent.futures
+import src.app.db as db
 
 prefixes = [
     "ACCT",
@@ -125,3 +126,18 @@ def create_dict():
     return prefix_dict
 
 print(create_dict()["COMP"])
+
+course_dict = create_dict()
+
+with concurrent.futures.ThreadPoolExecutor() as executor:    
+    for prefix in course_dict:
+        for course in course_dict[prefix]:
+            executor.submit(db.insert_course, course)
+# futures = []
+# with concurrent.futures.ThreadPoolExecutor() as executor:
+#     for prefix in course_dict:
+#         future = executor.submit(db.insert_course, course_dict[prefix])
+#         futures.append(future)
+
+# # Optionally, wait for all futures to complete
+# concurrent.futures.wait(futures)
