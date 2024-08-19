@@ -1,6 +1,7 @@
 import requests
 import concurrent.futures
 import src.app.db as db
+import argparse
 
 prefixes = [
     "ACCT",
@@ -125,19 +126,20 @@ def create_dict():
     
     return prefix_dict
 
-print(create_dict()["COMP"])
+# print(create_dict()["COMP"])
 
-course_dict = create_dict()
-
-with concurrent.futures.ThreadPoolExecutor() as executor:    
-    for prefix in course_dict:
+def insert_department(prefix):
+    course_dict = create_dict()
+    print(course_dict[prefix])
+    with concurrent.futures.ThreadPoolExecutor() as executor:    
         for course in course_dict[prefix]:
             executor.submit(db.insert_course, course)
-# futures = []
-# with concurrent.futures.ThreadPoolExecutor() as executor:
-#     for prefix in course_dict:
-#         future = executor.submit(db.insert_course, course_dict[prefix])
-#         futures.append(future)
 
-# # Optionally, wait for all futures to complete
-# concurrent.futures.wait(futures)
+def main():
+    parser = argparse.ArgumentParser(description="Insert courses into the database")
+    parser.add_argument("prefix", type=str, help="The prefix of the department")
+    args = parser.parse_args()
+    insert_department(args.prefix)
+
+if __name__ == "__main__":
+    main()

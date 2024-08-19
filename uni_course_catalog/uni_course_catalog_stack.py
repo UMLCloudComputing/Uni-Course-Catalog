@@ -3,7 +3,8 @@ from aws_cdk import (
     Stack,
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
-    aws_apigateway as apigateway
+    aws_apigateway as apigateway,
+    CfnOutput
 )
 from constructs import Construct
 
@@ -18,12 +19,13 @@ class UniCourseCatalogStack(Stack):
             sort_key=dynamodb.Attribute(name="code", type=dynamodb.AttributeType.STRING)
         )
 
+        # Lambda Function
         dockerFunc = _lambda.DockerImageFunction(
             scope=self,
             id=f"ID{construct_id}",
             function_name=construct_id,
             environment= {
-                "TABLE": table.table_name
+                "TABLE_NAME": table.table_name
             },            
             code=_lambda.DockerImageCode.from_image_asset(
                 directory="src"
@@ -31,9 +33,14 @@ class UniCourseCatalogStack(Stack):
             timeout=Duration.seconds(900)
         )
 
+        # API Gateway to Lambda
         api = apigateway.LambdaRestApi(self, f"API{construct_id}",
             handler=dockerFunc,
             proxy=True,
         )
 
+        # Grant read/write permissions to the Lambda function
         table.grant_read_write_data(dockerFunc.role)
+
+        # Output name of the table
+        CfnOutput(self, f"TableName{construct_id}", value=table.table_name)
