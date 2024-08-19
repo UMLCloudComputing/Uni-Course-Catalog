@@ -58,7 +58,25 @@ def get_department(prefix):
             ':prefix': {'S': prefix}
         }
     )
-    return response['Items']
+
+    # print(response['Items'])
+    list_dict = []
+
+    for result in response['Items']:
+        # print(result)
+        dict = {
+            'Department': result['prefix']['S'],
+            'CatalogNumber': result['code']['S'],
+            'Title': result['title']['S'],
+            'Description': result['description']['S'],
+            'Credits': result['credits']['S'],
+            'Career': result['career']['S'],
+            'Requirements': result['requirements']['S']
+        }
+        list_dict.append(dict)
+
+    return list_dict
+
     
 
 ## NOT TESTED
@@ -78,7 +96,7 @@ def delete_course(prefix, code):
         return False
     
 if __name__ == "__main__":
-    print(get_course('COMP', '1000'))
+    # print(get_course('COMP', '1000'))
     print(get_department('COMP'))
     # dict = {'Id': '008054', 'Department': 'COMP', 'CatalogNumber': '1000', 'Title': 'Media Computing (Formerly 91.100)', 'Description': 'An introductory course to computer programming using multimedia applications such as images, video and audio. Linear data structures representing multimedia data are manipulated with loops and conditionals in the Python language.', 'UnitsMinimum': 3.0, 'UnitsMaximum': 3.0, 'AcademicCareer': {'Value': 1, 'Description': 'Undergraduate', 'XmlValue': 'UGRD'}, 'AcademicGroup': 'SCI', 'AcademicOrganization': 'LCOMPSCI', 'EnrollmentRequirements': '', 'RequirementDesignation': {'Value': 0, 'Description': 'Any', 'XmlValue': ''}, 'Components': None}
     # print(insert_course(dict))
