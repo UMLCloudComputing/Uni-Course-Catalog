@@ -1,5 +1,5 @@
 {
-  "app": "python3 app.py",
+  "app": "python3 uni_course_catalog/app.py",
   "watch": {
     "include": [
       "**"
