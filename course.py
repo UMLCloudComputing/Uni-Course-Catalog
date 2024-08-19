@@ -135,11 +135,21 @@ def insert_department(prefix):
         for course in course_dict[prefix]:
             executor.submit(db.insert_course, course)
 
+def insert_all():
+    course_dict = create_dict()
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for prefix in prefixes:
+            for course in course_dict[prefix]:
+                executor.submit(db.insert_course, course)
 def main():
     parser = argparse.ArgumentParser(description="Insert courses into the database")
-    parser.add_argument("prefix", type=str, help="The prefix of the department")
+    parser.add_argument("--prefix", type=str, help="The prefix of the department")
     args = parser.parse_args()
-    insert_department(args.prefix)
+
+    if args.prefix:
+        insert_department(args.prefix)
+    else:
+        insert_all()
 
 if __name__ == "__main__":
     main()
