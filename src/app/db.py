@@ -49,6 +49,17 @@ def get_course(prefix, code):
     else:
         return None
     
+def get_department(prefix):
+    dynamodb = get_dynamodb_client()
+    response = dynamodb.query(
+        TableName=os.getenv('TABLE_NAME'),
+        KeyConditionExpression='prefix = :prefix',
+        ExpressionAttributeValues={
+            ':prefix': {'S': prefix}
+        }
+    )
+    return response['Items']
+    
 
 ## NOT TESTED
 def delete_course(prefix, code):
@@ -68,5 +79,6 @@ def delete_course(prefix, code):
     
 if __name__ == "__main__":
     print(get_course('COMP', '1000'))
+    print(get_department('COMP'))
     # dict = {'Id': '008054', 'Department': 'COMP', 'CatalogNumber': '1000', 'Title': 'Media Computing (Formerly 91.100)', 'Description': 'An introductory course to computer programming using multimedia applications such as images, video and audio. Linear data structures representing multimedia data are manipulated with loops and conditionals in the Python language.', 'UnitsMinimum': 3.0, 'UnitsMaximum': 3.0, 'AcademicCareer': {'Value': 1, 'Description': 'Undergraduate', 'XmlValue': 'UGRD'}, 'AcademicGroup': 'SCI', 'AcademicOrganization': 'LCOMPSCI', 'EnrollmentRequirements': '', 'RequirementDesignation': {'Value': 0, 'Description': 'Any', 'XmlValue': ''}, 'Components': None}
     # print(insert_course(dict))
